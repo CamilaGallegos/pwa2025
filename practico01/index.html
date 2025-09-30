@@ -27,6 +27,37 @@
     .btn-dec:hover {
       background-color: #b71c1c;
     }
+    .tareas-lista {
+      list-style: none;
+      padding-left: 0;
+      margin-bottom: 10px;
+    }
+    .tarea-item {
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+    }
+    .tarea-item label {
+      margin-left: 8px;
+      cursor: pointer;
+    }
+    .input-tarea {
+      padding: 4px 10px;
+      border-radius: 4px;
+      border: 1px solid #aaa;
+      margin-right: 8px;
+    }
+    .btn-add {
+      background-color: #2196f3;
+      color: white;
+      border: none;
+      padding: 7px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-add:hover {
+      background-color: #1769aa;
+    }
   </style>
 </head>
 <body>
@@ -46,6 +77,22 @@
     <p>Contador: {{ contador }}</p>
     <button @click="decrementar" class="btn-dec">Decrementar</button>
     <button @click="incrementar" class="btn-inc">Incrementar</button>
+  
+    <!-- paso 4 lista de tareas -->
+    <hr>
+    <h2>Paso 4: Lista de Tareas</h2>
+    <div>
+        <input type="text" v-model="nuevaTarea" class="input-tarea" placeholder="Nueva tarea" @keyup.enter="agregarTarea"/>
+        <button @click="agregarTarea" class="btn-agregar">Agregar</button>
+    </div>
+    <ul class="lista-tareas">
+        <li v-for="tarea in tareas" :key="tarea.id" class="tarea-item">
+            <input type="checkbox" v-model="tarea.completada" :id="'tarea-' + tarea.id"/>
+            <label :for="'tarea-' + tarea.id" :style="{ textDecoration: tarea.completada ? 'line-through' : 'none' }">{{ tarea.texto }}</label>
+        </li>
+    </ul>
+    <p><strong>Total de tareas:</strong> {{ totalTareas }}</p>
+    <p><strong>Tareas pendientes:</strong> {{ tareasPendientes }}</p>
   </div>
 
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -58,8 +105,24 @@
           nombre: "Camila Gallegos",
           edad: 23,
           ciudad: "Viedma",
-          contador: 0
+          contador: 0,
+          nuevaTarea: '',
+          tareas: [
+            { id: 1, texto: 'Aprender vue.js', completada: false },
+            { id: 2, texto: 'Aprobar Programacion Web Avanzada', completada: false },
+            { id: 3, texto: 'Hacer el trabajo practico 01', completada: true },
+            { id: 4, texto: 'Aprobar el trabajo practico 01', completada: false }
+            ],
+            proximoId: 5
         };
+      },
+      computed: {
+        tareasPendientes() {
+          return this.tareas.filter(tarea => !tarea.completada).length;
+        },
+        totalTareas() {
+          return this.tareas.length;
+        },
       },
       methods: {
         incrementar() {
@@ -67,6 +130,13 @@
         },
         decrementar() {
           this.contador--;
+        },
+        agregarTarea() {
+          const texto = this.nuevaTarea.trim();
+          if (texto) {
+            this.tareas.push({ id: this.proximoId++, texto, completada: false });
+            this.nuevaTarea = '';
+          }
         }
       },
     }).mount('#app');
