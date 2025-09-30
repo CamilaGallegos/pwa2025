@@ -3,6 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <title>Trabajo Practico 01</title>
+  <style>
+    .btn-inc {
+      background-color: #29c13b;
+      color: white;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    .btn-dec {
+      background-color: #e53935;
+      color: white;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-inc:hover {
+      background-color: #218a2e;
+    }
+    .btn-dec:hover {
+      background-color: #b71c1c;
+    }
+  </style>
 </head>
 <body>
   <h1>Paso 2: Informacion de Perfil Simple</h1>
@@ -14,6 +39,13 @@
     <p>
       Hola, mi nombre es {{ nombre }}, tengo {{ edad }} años y vivo en {{ ciudad }}.
     </p>
+
+    <!-- paso 3 contador interactivo -->
+    <hr>
+    <h2>Paso 3: Contador Interactivo</h2>
+    <p>Contador: {{ contador }}</p>
+    <button @click="decrementar" class="btn-dec">Decrementar</button>
+    <button @click="incrementar" class="btn-inc">Incrementar</button>
   </div>
 
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -25,9 +57,18 @@
         return {
           nombre: "Camila Gallegos",
           edad: 23,
-          ciudad: "Viedma"
+          ciudad: "Viedma",
+          contador: 0
         };
-      }
+      },
+      methods: {
+        incrementar() {
+          this.contador++;
+        },
+        decrementar() {
+          this.contador--;
+        }
+      },
     }).mount('#app');
   </script>
 </body>
