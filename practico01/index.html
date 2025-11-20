@@ -64,6 +64,16 @@
   <h1>Paso 2: Informacion de Perfil Simple</h1>
 
   <div id="app">
+    <!-- paso 1 del practico 2 -->
+    <h2>Lista de Eventos</h2>
+    <ul>
+      <li v-for="evento in listaeventos" :key="evento.id">
+        {{ evento.id }} - {{ evento.nombre }} - {{ evento.timestamp }}
+      </li>
+    </ul>
+
+    <hr>
+    <h2>Paso 2: Información de Perfil Simple</h2>
     <p><strong>Nombre:</strong> {{ nombre }}</p>
     <p><strong>Edad:</strong> {{ edad }}</p>
     <p><strong>Ciudad:</strong> {{ ciudad }}</p>
@@ -97,11 +107,18 @@
 
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script>
+    window.listaeventos = [];
+    window.eventoProximoId = 1;
+
     const { createApp } = Vue;
 
     createApp({
       data() {
         return {
+          // listaeventos definida como vacio
+          listaeventos: [],
+          eventoProximoId: 1,
+          
           nombre: "Camila Gallegos",
           edad: 23,
           ciudad: "Viedma",
@@ -125,20 +142,87 @@
         },
       },
       methods: {
+        sincronizarEventos() {
+          this.listaeventos = [...window.listaeventos];
+        },
         incrementar() {
           this.contador++;
+          this.sincronizarEventos();
         },
         decrementar() {
           this.contador--;
+          this.sincronizarEventos();
         },
         agregarTarea() {
           const texto = this.nuevaTarea.trim();
           if (texto) {
             this.tareas.push({ id: this.proximoId++, texto, completada: false });
             this.nuevaTarea = '';
+            this.sincronizarEventos();
           }
         }
       },
+
+      beforeCreate() { 
+        window.listaeventos.push({
+          id: window.eventoProximoId++,
+          nombre: 'beforeCreate',
+          timestamp: Date.now()
+        });
+      },
+      created() { 
+        window.listaeventos.push({
+          id: window.eventoProximoId++,
+          nombre: 'created',
+          timestamp: Date.now()
+        });
+        this.listaeventos = [...window.listaeventos];
+      },
+      beforeMount() { 
+        window.listaeventos.push({
+          id: window.eventoProximoId++,
+          nombre: 'beforeMount',
+          timestamp: Date.now()
+        });
+        this.listaeventos = [...window.listaeventos];
+      },
+      mounted() { 
+        window.listaeventos.push({
+          id: window.eventoProximoId++,
+          nombre: 'mounted',
+          timestamp: Date.now()
+        });
+        this.listaeventos = [...window.listaeventos];
+      },
+      beforeUpdate() { 
+        window.listaeventos.push({
+          id: window.eventoProximoId++,
+          nombre: 'beforeUpdate',
+          timestamp: Date.now()
+        });
+      },
+      updated() { 
+        window.listaeventos.push({
+          id: window.eventoProximoId++,
+          nombre: 'updated',
+          timestamp: Date.now()
+        });
+      },
+      beforeUnmount() { 
+        window.listaeventos.push({
+          id: window.eventoProximoId++,
+          nombre: 'beforeDestroy',
+          timestamp: Date.now()
+        });
+        this.listaeventos = [...window.listaeventos];
+      },
+      unmounted() { 
+        window.listaeventos.push({
+          id: window.eventoProximoId++,
+          nombre: 'destroyed',
+          timestamp: Date.now()
+        });
+      }
     }).mount('#app');
   </script>
 </body>
