@@ -129,6 +129,35 @@
         </li>
       </ul>
     </div>
+
+    <!-- paso 3 del practico 2 -->
+    <hr>
+    <h2>Paso 3: Lista de posts y comentarios</h2>
+    <div style="display: flex; gap: 20px;">
+      <div style="flex: 1;">
+        <h3>Posts (haz clic en uno)</h3>
+        <ul style="list-style: none; padding: 0;">
+          <li v-for="p in posts" :key="p.id" 
+              @click="seleccionarPost(p.id)"
+              style="padding: 10px; margin-bottom: 5px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; background-color: #f9f9f9;"
+              :style="{ backgroundColor: postSeleccionado === p.id ? '#e3f2fd' : '#f9f9f9' }">
+            <strong>{{ p.id }}. {{ p.title }}</strong>
+          </li>
+        </ul>
+      </div>
+      
+      <div style="flex: 1;" v-if="comentariosPost.length > 0">
+        <h3>Comentarios del post {{ postSeleccionado }}</h3>
+        <ul style="list-style: none; padding: 0;">
+          <li v-for="comentario in comentariosPost" :key="comentario.id" 
+              style="padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; background-color: #fff;">
+            <strong>{{ comentario.name }}</strong><br>
+            <small style="color: #666;">{{ comentario.email }}</small><br>
+            <p style="margin-top: 5px;">{{ comentario.body }}</p>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -161,7 +190,11 @@
           
           postId: 1,
           post: null,
-          comentarios: []
+          comentarios: [],
+          
+          posts: [],
+          comentariosPost: [],
+          postSeleccionado: null
         };
       },
       computed: {
@@ -212,6 +245,12 @@
             this.comentarios = await this.obtenerComments(this.postId);
             this.sincronizarEventos();
           }
+        },
+        
+        async seleccionarPost(postId) {
+          this.postSeleccionado = postId;
+          this.comentariosPost = await this.obtenerComments(postId);
+          this.sincronizarEventos();
         }
       },
 
@@ -238,13 +277,18 @@
         });
         this.listaeventos = [...window.listaeventos];
       },
-      mounted() { 
+      async mounted() { 
         window.listaeventos.push({
           id: window.eventoProximoId++,
           nombre: 'mounted',
           timestamp: Date.now()
         });
         this.listaeventos = [...window.listaeventos];
+        
+        for (let i = 1; i <= 10; i++) {
+          const post = await this.obtenerPost(i);
+          this.posts.push(post);
+        }
       },
       beforeUpdate() { 
         window.listaeventos.push({
