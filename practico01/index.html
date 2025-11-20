@@ -103,9 +103,36 @@
     </ul>
     <p><strong>Total de tareas:</strong> {{ totalTareas }}</p>
     <p><strong>Tareas pendientes:</strong> {{ tareasPendientes }}</p>
+
+    <!-- paso 2 del practico 2 -->
+    <hr>
+    <h2>Paso 2: Axios</h2>
+    <div>
+      <label>ID del post: </label>
+      <input type="number" v-model.number="postId" min="1" max="100" placeholder="Ej: 1" />
+      <button @click="cargarPost" class="btn-inc">Obtener post</button>
+      <button @click="cargarComentarios" class="btn-add">Obtener comentarios</button>
+    </div>
+    
+    <div v-if="post" style="margin-top: 20px; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+      <h3>Post #{{ post.id }}</h3>
+      <h4>{{ post.title }}</h4>
+      <p>{{ post.body }}</p>
+    </div>
+
+    <div v-if="comentarios.length > 0" style="margin-top: 20px;">
+      <h3>Comentarios ({{ comentarios.length }})</h3>
+      <ul>
+        <li v-for="comentario in comentarios" :key="comentario.id" style="margin-bottom: 10px; padding: 5px; border-bottom: 1px solid #eee;">
+          <strong>{{ comentario.name }}</strong> ({{ comentario.email }})<br>
+          {{ comentario.body }}
+        </li>
+      </ul>
+    </div>
   </div>
 
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script>
     window.listaeventos = [];
     window.eventoProximoId = 1;
@@ -130,7 +157,11 @@
             { id: 3, texto: 'Hacer el trabajo practico 01', completada: true },
             { id: 4, texto: 'Aprobar el trabajo practico 01', completada: false }
             ],
-            proximoId: 5
+            proximoId: 5,
+          
+          postId: 1,
+          post: null,
+          comentarios: []
         };
       },
       computed: {
@@ -158,6 +189,27 @@
           if (texto) {
             this.tareas.push({ id: this.proximoId++, texto, completada: false });
             this.nuevaTarea = '';
+            this.sincronizarEventos();
+          }
+        },
+        
+        async obtenerPost(postId) {
+          const response = await axios.get(`https://jsonplaceholder.typicode.com/posts/${postId}`);
+          return response.data;
+        },
+        async obtenerComments(postId) {
+          const response = await axios.get(`https://jsonplaceholder.typicode.com/posts/${postId}/comments`);
+          return response.data;
+        },
+        async cargarPost() {
+          if (this.postId) {
+            this.post = await this.obtenerPost(this.postId);
+            this.sincronizarEventos();
+          }
+        },
+        async cargarComentarios() {
+          if (this.postId) {
+            this.comentarios = await this.obtenerComments(this.postId);
             this.sincronizarEventos();
           }
         }
