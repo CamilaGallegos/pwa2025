@@ -1,1 +1,15 @@
+version: '3.8'
 
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: fei_db
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./.data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
