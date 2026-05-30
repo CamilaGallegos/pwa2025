@@ -13,3 +13,18 @@ services:
       - ./.data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+
+  django:
+    build:
+      context: ./config/django-image
+    container_name: fei_backend
+    restart: always
+    volumes:
+      - ./backend:/app
+      - ./config/django-image/entrypoint.sh:/app/entrypoint.sh:ro
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
